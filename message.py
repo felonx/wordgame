@@ -8,3 +8,6 @@ class Message:
         self.topic = mqtt_message.topic
         self.data = str(mqtt_message.payload.decode('utf-8'))
         self.time = datetime.datetime.utcnow()
+
+    def __repr__(self) -> str:
+        return f'<MSG: {self.topic} {self.data}'

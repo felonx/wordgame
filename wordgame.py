@@ -15,7 +15,9 @@ class Wordgame:
         if guess in self.answers:
             self.answers.remove(guess)
             self.scores[player].add(guess)
+            print(f'game: {player} guessed.\n {self.scores}\n')
             return f'{guess} OK! current score is {len(self.scores[player])}'
+        print(f'game: {player} bad guess')
         return 'bad guess'
 
 

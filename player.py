@@ -1,5 +1,6 @@
 import sys
 import paho.mqtt.client as mqtt
+import threading
 
 from message import Message
 
@@ -11,23 +12,26 @@ class Player(mqtt.Client):
 
 
     def on_connect(self, client, userdata, flags, rc):
+        self.name = str(self._client_id.decode())
         client.subscribe('REF')        
+        client.subscribe(f'REF/_response/{self.name}')        
         client.publish(topic='wordgame_connection', payload=self._client_id)
         print('player connected')
-        self.name = str(self._client_id.decode())
-
+        
     def on_message(self, client, userdata, message):
         msg = Message(message)      
-        print(msg.topic, msg.data)
-        self.get_input()
-
-    def get_input(self):    
-        guess = input('enter your guess')
-        message = ' '.join([self.name, guess])
-        self.publish(topic='wordgame', payload=message)
+        print(f'{self.name} received message:', msg.topic, msg.data)
+        
+    def get_input(self, guess):
+        self.publish(topic=f'REF/_answers/{self.name}', payload=str(guess))
 
 if __name__ == '__main__':
 
-    player = Player('player1')
+    player = Player(sys.argv[1])
     player.connect(HOST, PORT)
-    player.loop_forever()
+    player.loop_start()
+    while True:
+        guess = input('enter your guess\n')
+        player.get_input(guess)
+
+    
