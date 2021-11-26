@@ -10,4 +10,4 @@ class Message:
         self.time = datetime.datetime.utcnow()
 
     def __repr__(self) -> str:
-        return f'<MSG: {self.topic} {self.data}'
+        return f'<MSG: {self.topic} {self.data}>'

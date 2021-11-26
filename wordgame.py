@@ -13,13 +13,14 @@ class Wordgame:
             self.scores[player] = set()
 
     def player_guess(self, player, guess):
-        if guess in self.answers and set(guess).issubset(self.word):
+        guess = guess.lower().strip()
+        if guess in self.answers and set(guess).issubset(self.word):   # todo algorithm
             self.answers.remove(guess)
             self.scores[player].add(guess)
             print(f'game: {player} guessed.\n {self.scores}\n')
-            return f'\n{guess} OK! current score is:\n{self.get_score()}'
+            return f'\n{guess} OK! current score is:\n{self.get_score()}\n'
         print(f'game: {player} bad guess')
-        return 'bad guess'
+        return 'sorry, bad guess'
 
     def get_score(self):
         score = sorted([(name, len(words)) for name, words in self.scores.items()], key=lambda x: -x[1])
