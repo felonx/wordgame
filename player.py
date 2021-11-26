@@ -1,3 +1,4 @@
+import time
 import sys
 import paho.mqtt.client as mqtt
 import threading
@@ -31,6 +32,7 @@ if __name__ == '__main__':
     player.connect(HOST, PORT)
     player.loop_start()
     while True:
+        time.sleep(0.5)
         guess = input('enter your guess\n')
         player.get_input(guess)
 

@@ -1,7 +1,9 @@
 import paho.mqtt.client as mqtt
+import random
 
 from wordgame import Wordgame
 from message import Message
+from words import get_all_words
 
 HOST = 'localhost'
 PORT = 1883
@@ -30,6 +32,7 @@ class Referee(mqtt.Client):
 
         # referee publishes to REF topic that each player should listen to
         self.publish(topic='REF', payload='referee is ready')
+        
 
       
 
@@ -40,11 +43,12 @@ class Referee(mqtt.Client):
         print(f'referee received message {msg}')
 
         if msg.topic == 'wordgame_connection':
-            player_name = msg.data
+            player_name = msg.data            
             self.game.player_joins(player_name)
             self.subscribe(topic=f'REF/_answers/{player_name}')
             print(f'referee now listens to {player_name} answers')
             self.publish(topic='REF', payload=f'{player_name} joined the game')
+            self.publish(topic='REF', payload=f'word to play is: {self.game.word.upper()}')
 
         elif '/_answers/' in message.topic:
             player_name = message.topic.split('/')[-1]            
@@ -55,7 +59,10 @@ class Referee(mqtt.Client):
         
 if __name__ == '__main__':
 
-    game = Wordgame('abrakadabra', set(['abba', 'baba', 'kra', 'kara', 'ar', 'rak', 'brak']))
+    words = get_all_words()
+    word = random.choice(words)
+
+    game = Wordgame(word, set(words))
     ref = Referee(game=game, client_id='Referee')
     ref.connect(HOST, PORT)
     ref.loop_forever()
